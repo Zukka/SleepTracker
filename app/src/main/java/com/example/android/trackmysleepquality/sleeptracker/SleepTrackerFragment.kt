@@ -51,6 +51,14 @@ class SleepTrackerFragment : Fragment() {
                 inflater, R.layout.fragment_sleep_tracker, container, false)
 
         var manager = GridLayoutManager(activity, 3)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) =
+                when (position) {
+                    0 -> 3
+                    else -> 1
+                }
+            }
+
         binding.sleepList.layoutManager = manager
 
         val application = requireNotNull(this.activity).application
@@ -74,10 +82,9 @@ class SleepTrackerFragment : Fragment() {
 
         sleepTrackerViewModel.nights.observe(viewLifecycleOwner, Observer {
             it?.let {
-                adapter.submitList(it)
+                adapter.addHeaderAndSubmitList(it)
             }
         })
-
         // Add an Observer on the state variable for showing a Snackbar message
         // when the CLEAR button is pressed.
         sleepTrackerViewModel.showSnackBarEvent.observe(viewLifecycleOwner, Observer {
